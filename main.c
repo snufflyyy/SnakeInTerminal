@@ -7,13 +7,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <conio.h> // windows only :(
 #include <time.h>
+
+// detects the users os
+#ifdef _WIN32
+    // windows only library, used for keyboard input
+    #include <conio.h>
+#elif __linux__
+    // linux (and probably unix aswell) only library, used for keyboard input
+    #include <ncurses.h>
+    // used for sleep()
+    #include <unistd.h>
+
+#endif
 
 // in c arrays must know their size at compile time
 // 30 "tiles" in the x and 15 "tiles" in the y
-#define XSIZE 30
-#define YSIZE 15
+#define XSIZE 70
+#define YSIZE 35
 
 // x and y values put into a single type
 typedef struct {
@@ -61,6 +72,10 @@ void spawnApple();
 
 // sets default values and other related needs
 void initialize() {
+    #ifdef __linux__
+        initscr();
+    #endif
+
     gameOver = false;
 
     // puts the snakes head position in the middle of the game board
@@ -93,18 +108,39 @@ void restart() {
 
 // gets keyboard input from the user
 void input() {
-    // checks if the keyboard was even hit
-    if (kbhit() != 0) {
-        // the arrow keys in getch() first returns a "224" then the arrow key code
-        if (getch() == 224) {
-            switch (getch()) {
-                case 72: if (snakeDirection != DOWN) snakeDirection = UP; break;
-                case 80: if (snakeDirection != UP) snakeDirection = DOWN; break;
-                case 75: if (snakeDirection != RIGHT) snakeDirection = LEFT; break;
-                case 77: if (snakeDirection != LEFT) snakeDirection = RIGHT; break;
+    #ifdef _WIN32
+        // checks if the keyboard was even hit
+        if (kbhit() != 0) {
+            // the arrow keys in getch() first returns a "224" then the arrow key code
+            if (getch() == 224) {
+                switch (getch()) {
+                    case 72: if (snakeDirection != DOWN) snakeDirection = UP; break;
+                    case 80: if (snakeDirection != UP) snakeDirection = DOWN; break;
+                    case 75: if (snakeDirection != RIGHT) snakeDirection = LEFT; break;
+                    case 77: if (snakeDirection != LEFT) snakeDirection = RIGHT; break;
+                }
             }
         }
-    }
+    #elif __linux__
+        cbreak();
+        noecho();
+        nodelay(stdscr, TRUE);
+
+        // allows the arrow keys to be used
+        keypad(stdscr, TRUE);
+
+        int ch = getch();
+
+        if (ch != ERR) {
+            switch (ch) {
+                case KEY_UP: if (snakeDirection != DOWN) snakeDirection = UP; break;
+                case KEY_DOWN: if (snakeDirection != UP) snakeDirection = DOWN; break;
+                case KEY_LEFT: if (snakeDirection != RIGHT) snakeDirection = LEFT; break;
+                case KEY_RIGHT: if (snakeDirection != LEFT) snakeDirection = RIGHT; break;
+            }
+            refresh();
+        }
+    #endif    
 }
 
 // updates the game board
@@ -230,12 +266,16 @@ void update() {
 // renders the game board
 void render() {
     // clearing the terminal
-    system("cls");
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif    
 
     if (!gameOver) {
-        printf("Score: %d\n", score);
+        printf("Score: %d\n\r", score);
     } else {
-        printf("Game Over :( - Press R to Play Again\n");
+        printf("Game Over :(\n\r");
     }
 
     // renders the board
@@ -250,7 +290,7 @@ void render() {
             }
         }
         // skips to the next line
-        printf("\n");
+        printf("\n\r");
     }
 }
 
@@ -262,6 +302,9 @@ int main() {
         while (!gameOver) {
             update();
             render();
+            #ifdef __linux__
+                usleep(50 * 1000);
+            #endif    
         }
     }
 

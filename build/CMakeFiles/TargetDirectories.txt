@@ -1,0 +1,3 @@
+/home/braden/CProjects/SnakeInTerminal/build/CMakeFiles/Snake.dir
+/home/braden/CProjects/SnakeInTerminal/build/CMakeFiles/edit_cache.dir
+/home/braden/CProjects/SnakeInTerminal/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/braden/CProjects/SnakeInTerminal/build",
+  "command": "/usr/bin/clang -g -std=gnu11 -o CMakeFiles/Snake.dir/main.c.o -c /home/braden/CProjects/SnakeInTerminal/main.c",
+  "file": "/home/braden/CProjects/SnakeInTerminal/main.c",
+  "output": "CMakeFiles/Snake.dir/main.c.o"
+}
+]
