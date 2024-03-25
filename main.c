@@ -8,15 +8,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <string.h>
 
 // detects the users os
 #ifdef _WIN32
     // windows only library, used for keyboard input
     #include <conio.h>
 #elif __linux__
-    // linux (and probably unix aswell) only library, used for keyboard input
+    // linux (and probably unix aswell) library, used for keyboard input
     #include <ncurses.h>
-    // used for sleep()
+    // used for usleep()
     #include <unistd.h>
 
 #endif
@@ -64,8 +65,9 @@ Position snakeHeadPos;
 Direction snakeDirection;
 
 // the snakes tail
-// YSIZE - 1 * XSIZE - 1 is the largest the snakes tail can possibly get
-Position snakeTail[(YSIZE - 1) * (XSIZE - 1)];
+// YSIZE - 2 * XSIZE - 2 is the largest the snakes tail can possibly get
+// while still being in side the game board
+Position snakeTail[(YSIZE - 2) * (XSIZE - 2)];
 
 // always the initialize function to use the spawnApple function
 void spawnApple();
@@ -279,6 +281,27 @@ void render() {
     }
 
     // renders the board
+    // render output is that size because of the new line characters
+    char renderOutput[YSIZE * XSIZE + YSIZE * 2];
+    renderOutput[0] = '\0';
+    for (int y = 0; y < YSIZE; y++) {
+        for (int x = 0; x < XSIZE; x++) {
+            switch (gameBoard[y][x]) {
+                case 0: strcat(renderOutput, " "); break; // empty
+                case 1: strcat(renderOutput, "#"); break; // border
+                case 2: strcat(renderOutput, "O"); break; // snake head
+                case 3: strcat(renderOutput, "o"); break; // snake body
+                case 4: strcat(renderOutput, "*"); break; // apple
+            }
+        }
+        // skips to the next line
+        strcat(renderOutput, "\n\r");
+    }
+
+    printf("%s", renderOutput);
+
+    /** old renderer (could work better in slight edge cases)
+    // renders the board
     for (int y = 0; y < YSIZE; y++) {
         for (int x = 0; x < XSIZE; x++) {
             switch (gameBoard[y][x]) {
@@ -292,6 +315,7 @@ void render() {
         // skips to the next line
         printf("\n\r");
     }
+    **/
 }
 
 int main() {
