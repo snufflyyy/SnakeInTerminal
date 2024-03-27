@@ -248,8 +248,8 @@ void update() {
     input();
 
     // updates the snakes position based on the snake direction
-    // movement speed is based on computer speed but this is a
-    // simple game, so it really isn't that big of an issue
+    // *windows* movement speed is based on terminal speed but
+    // this is a simple game, so it really isn't a big issue
     switch (snakeDirection) {
         case NONE: /** do nothing **/ break;
         case UP: snakeHeadPos.y--; break;
